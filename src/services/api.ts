@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { parseCookies, setCookie } from 'nookies';
 import { signOut } from '../context/AuthContext';
+import { AuthTokenError } from '../errors/AuthTokenError';
 
 let isRefreshing = false;
 let failedRequestsQueue = [];
@@ -51,9 +52,14 @@ export function setupAPIClient(ctx = undefined) {
             failedRequestsQueue.forEach(request => request.onFailure(err));
             failedRequestsQueue = [];
   
-            if(typeof window !== undefined){
-              signOut();
+            if(process.browser){ // typeof window !== undefined
+              console.log("Client")
+              return signOut();
+            } else {
+              console.log("Server")
+              return Promise.reject(new AuthTokenError())
             }
+
           }).finally(() => {
             isRefreshing = false;
           });
