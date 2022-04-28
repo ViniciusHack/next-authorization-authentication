@@ -53,11 +53,7 @@ export function setupAPIClient(ctx = undefined) {
             failedRequestsQueue = [];
   
             if(process.browser){ // typeof window !== undefined
-              console.log("Client")
               return signOut();
-            } else {
-              console.log("Server")
-              return Promise.reject(new AuthTokenError())
             }
 
           }).finally(() => {
@@ -78,7 +74,11 @@ export function setupAPIClient(ctx = undefined) {
           });
         });
       } else {
-        signOut();
+        if(process.browser){ // typeof window !== undefined
+          return signOut();
+        } else {
+          return Promise.reject(new AuthTokenError())
+        }
       }
     }
   
